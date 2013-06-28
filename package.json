@@ -12,7 +12,7 @@
     "ltx": "~0.2.3",
     "sockjs": "*",
     "node-static": "*",
-    "underscore": "~1.4",
+    "underscore": "~1.4"
   },
   "devDependencies": {},
   "scripts": {
