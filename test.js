@@ -144,7 +144,9 @@ describe('PubSubHubbub', function () {
       type('form').
       send('hub.mode=subscribe').
       send('hub.topic=' + encodeURIComponent(resource.links.self)).
-      expect(400, /hub\.callback/, done);
+      expect(done);
+      assert(response.clientError);
+      assert(/hub\.callback/.test(response.body));
     });
 
     it('should return a 4xx when issuing a invalid subscription request with no hub.mode and provide the right error in the body', function(done) {
@@ -153,7 +155,8 @@ describe('PubSubHubbub', function () {
       type('form').
       send('hub.topic=' + encodeURIComponent(resource.links.self)).
       send('hub.callback=' + encodeURIComponent(callback.links.self)).
-      expect(400, /hub\.mode/, done);
+      assert(response.clientError);
+      assert(/hub\.mode/.test(response.body));
     });
 
     it('should return a 4xx when issuing a invalid subscription request with no hub.topic and provide the right error in the body', function(done) {
@@ -162,7 +165,8 @@ describe('PubSubHubbub', function () {
       type('form').
       send('hub.mode=subscribe').
       send('hub.callback=' + encodeURIComponent(callback.links.self)).
-      expect(400, /hub\.topic/, done);
+      assert(response.clientError);
+      assert(/hub\.topic/.test(response.body));
     });
 
     it('should ignore extra parameters they do not understand', function(done) {
