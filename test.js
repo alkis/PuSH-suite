@@ -123,7 +123,7 @@ describe('PubSubHubbub', function () {
       expect(202, done);
     });
 
-    it('should accept only the self link provided by the discovery phase, if there is any', function(done) {
+    it('might trigger an error if hub.topic is not the same as the self link provided by the discovery phase, ', function(done) {
       var parsed = urlParser.parse(resource.links.self);
       parsed.search = '?somextra';
       delete parsed.href;
@@ -134,7 +134,8 @@ describe('PubSubHubbub', function () {
       send('hub.mode=subscribe').
       send('hub.topic=' + encodeURIComponent(urlParser.format(parsed))).
       send('hub.callback=' + encodeURIComponent(callback.links.self)).
-      expect(422, done);
+      expect(done);
+      assert(response.accepted || response.clientError, 'Hub should either accept topic or reject if not the same as self link');
     });
 
     it('should return a 4xx when issuing a invalid subscription request with no hub.callback and provide the right error in the body', function(done) {
@@ -143,7 +144,7 @@ describe('PubSubHubbub', function () {
       type('form').
       send('hub.mode=subscribe').
       send('hub.topic=' + encodeURIComponent(resource.links.self)).
-      expect(422, /hub\.callback/, done);
+      expect(400, /hub\.callback/, done);
     });
 
     it('should return a 4xx when issuing a invalid subscription request with no hub.mode and provide the right error in the body', function(done) {
@@ -152,7 +153,7 @@ describe('PubSubHubbub', function () {
       type('form').
       send('hub.topic=' + encodeURIComponent(resource.links.self)).
       send('hub.callback=' + encodeURIComponent(callback.links.self)).
-      expect(422, /hub\.mode/, done);
+      expect(400, /hub\.mode/, done);
     });
 
     it('should return a 4xx when issuing a invalid subscription request with no hub.topic and provide the right error in the body', function(done) {
@@ -161,7 +162,7 @@ describe('PubSubHubbub', function () {
       type('form').
       send('hub.mode=subscribe').
       send('hub.callback=' + encodeURIComponent(callback.links.self)).
-      expect(422, /hub\.topic/, done);
+      expect(400, /hub\.topic/, done);
     });
 
     it('should ignore extra parameters they do not understand', function(done) {
